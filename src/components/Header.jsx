@@ -3,6 +3,9 @@ import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Row from "react-bootstrap/Row";
+import LoginButton from "./LoginButton";
+import Logout from "./LogoutButton";
+import RegisterButton from "./RegisterButton";
 import { Link } from "react-router-dom";
 
 const Header = () => {
@@ -24,6 +27,23 @@ const Header = () => {
                   <Button variant="contained">Favourites</Button>
                 </Link>
               </Nav>
+              {/*   <div className="login"> */}
+              <Nav>
+                <Link to="/login">
+                  <Button variant="contained">Login</Button>
+                </Link>
+              </Nav>
+              <Nav>
+                <Link to="/">
+                  <Button variant="contained">Logout</Button>
+                </Link>
+              </Nav>
+              <Nav>
+                <Link to="/register">
+                  <Button variant="contained">Register</Button>
+                </Link>
+              </Nav>
+              {/*      </div> */}
             </Navbar.Collapse>
           </Container>
         </Navbar>
