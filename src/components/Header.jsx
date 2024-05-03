@@ -8,7 +8,22 @@ import Logout from "./LogoutButton";
 import RegisterButton from "./RegisterButton";
 import { Link } from "react-router-dom";
 
+import { onAuthStateChanged } from "firebase/auth";
+import { useEffect, useState } from "react";
+import { auth } from "../config/config";
+
 const Header = () => {
+  const [userSignedIn, setUserSignedIn] = useState(false);
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserSignedIn(true);
+      } else {
+        setUserSignedIn(false);
+      }
+    });
+  }, []);
+
   return (
     <Container fluid>
       <Row>
@@ -28,21 +43,28 @@ const Header = () => {
                 </Link>
               </Nav>
               {/*   <div className="login"> */}
-              <Nav>
-                <Link to="/login">
-                  <Button variant="contained">Login</Button>
-                </Link>
-              </Nav>
-              <Nav>
-                <Link to="/">
-                  <Button variant="contained">Logout</Button>
-                </Link>
-              </Nav>
-              <Nav>
-                <Link to="/register">
-                  <Button variant="contained">Register</Button>
-                </Link>
-              </Nav>
+              {!userSignedIn && (
+                <Nav>
+                  <Link to="/login">
+                    <Button variant="contained">Login</Button>
+                  </Link>
+                </Nav>
+              )}
+              {userSignedIn ? (
+                <Nav>
+                  <Link to="/">
+                    <Button variant="contained">Logout</Button>
+                  </Link>
+                </Nav>
+              ) : null}
+              {!userSignedIn && (
+                <Nav>
+                  <Link to="/register">
+                    <Button variant="contained">Register</Button>
+                  </Link>
+                </Nav>
+              )}
+
               {/*      </div> */}
             </Navbar.Collapse>
           </Container>
