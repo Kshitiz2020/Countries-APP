@@ -56,7 +56,7 @@ const Header = () => {
               {userSignedIn ? (
                 <Nav>
                   <Link to="/">
-                    <Button variant="contained">Logout</Button>
+                    <Logout />
                   </Link>
                 </Nav>
               ) : null}
