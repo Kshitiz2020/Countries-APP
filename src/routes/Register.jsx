@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { auth } from "../config/config";
 //firebase imported
 
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
 const Register = () => {
+  const [name, setName] = useState("");
+
   const [email, setEmail] = useState("");
 
   const [password, setPassword] = useState("");
@@ -13,7 +15,8 @@ const Register = () => {
 
   const [registeredSuccessfully, setRegisteredSuccessfully] = useState(false);
 
-  const handleRegister = async () => {
+  const handleRegister = async (e) => {
+    e.preventDefault();
     if (confirmPassword !== password) {
       console.log("password should match");
       return;
@@ -22,6 +25,10 @@ const Register = () => {
     await createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed up
+        updateProfile(auth.currentUser, {
+          displayName: name,
+        });
+
         const user = userCredential.user;
         setRegisteredSuccessfully(true);
 
@@ -31,12 +38,20 @@ const Register = () => {
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
+        console.log(error);
         // ..
       });
   };
   return (
-    <div>
+    <form onSubmit={handleRegister}>
       <h1>Register for your virtual tour</h1>
+      <input
+        type="text"
+        id="name"
+        placeholder="Enter your name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
       <input
         type="text"
         id="email"
@@ -59,9 +74,9 @@ const Register = () => {
         onChange={(e) => setConfirmPassword(e.target.value)}
       />
 
-      <button onClick={handleRegister}>Register</button>
+      <button>Register</button>
       {registeredSuccessfully && <p>registeredSuccessfully </p>}
-    </div>
+    </form>
   );
 };
 export default Register;

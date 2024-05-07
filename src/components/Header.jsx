@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { auth } from "../config/config";
+import ProfileIcon from "./ProfileIcon";
 
 const Header = () => {
   const [userSignedIn, setUserSignedIn] = useState(false);
@@ -50,6 +51,8 @@ const Header = () => {
                   </Link>
                 </Nav>
               )}
+              {userSignedIn && <ProfileIcon />}
+
               {userSignedIn ? (
                 <Nav>
                   <Link to="/">
