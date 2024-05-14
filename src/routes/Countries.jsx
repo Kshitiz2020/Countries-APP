@@ -1,21 +1,31 @@
 import { useEffect } from "react";
 
+import { Link } from "react-router-dom";
+
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { Spinner } from "react-bootstrap";
+import { Button, Spinner } from "react-bootstrap";
 import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import ListGroup from "react-bootstrap/ListGroup";
 import Row from "react-bootstrap/Row";
+
 import { useDispatch, useSelector } from "react-redux";
 import { initializeCountries } from "../store/countriesSlice";
 import { addFavourite } from "../store/favouritesSlice";
+import { imageListClasses } from "@mui/material";
 
 const Countries = () => {
   const dispatch = useDispatch();
 
   const countriesList = useSelector((state) => state.countries.countries);
   const loading = useSelector((state) => state.countries.isLoading);
+  const favouritesList = useSelector((state) => state.favourites.favourites);
+
+  const favouriteCountryNames = favouritesList.map((country) => {
+    return country.name.common;
+  });
+  //console.log(countriesList[0]);
 
   useEffect(() => {
     dispatch(initializeCountries());
@@ -43,7 +53,11 @@ const Countries = () => {
           <Col key={country.name.official} className="mt-5">
             <Card className="h-100">
               <FavoriteIcon
-                color="red"
+                color={
+                  favouriteCountryNames.includes(country.name.common)
+                    ? "primary"
+                    : "dark"
+                }
                 onClick={() => dispatch(addFavourite(country))}
               />
               <Card.Img
@@ -79,6 +93,14 @@ const Countries = () => {
                     {country.population.toLocaleString()}
                   </ListGroup.Item>
                 </ListGroup>
+                <Link to={`/countries/${country.name.common}`}>
+                  <Button
+                    onClick={() => console.log(country.name.common)}
+                    variant="primary"
+                  >
+                    Country Details
+                  </Button>
+                </Link>
               </Card.Body>
             </Card>
           </Col>

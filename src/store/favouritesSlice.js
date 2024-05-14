@@ -6,15 +6,47 @@ export const favouritesSlice = createSlice({
     favourites: [],
   },
   reducers: {
-    addFavourite(state, action) {
-      state.favourites = [...state.favourites, action.payload];
+    getFavourites(state, action) {
+      state.favourites = action.payload;
     },
-    clearFavourites(state, action) {
+    addFavourite(state, action) {
+      if (
+        state.favourites.some(
+          (fav) => fav.name.common === action.payload.name.common
+        )
+      ) {
+        state.favourites = [...state.favourites];
+      } else {
+        state.favourites = [...state.favourites, action.payload];
+      }
+
+      /*    const user = auth.currentUser;
+      if (user) addFavouriteToFirebase(user.uid, action.payload); */
+    },
+    removeFavourite(state, action) {
+      const newArray = [...state.favourites];
+      newArray.splice(
+        newArray.findIndex((e) => e === action.payload),
+        1
+      );
+      state.favourites = [...newArray];
+
+      /*   const user = auth.currentUser;
+      if (user) {
+        removeFavouriteFromFirebase(user.uid, action.payload);
+      } */
+    },
+    clearFavourites(state) {
       state.favourites = [];
+      /* const user = auth.currentUser;
+      if (user) {
+        clearFavouritesFromFirebase(user.uid);
+      }  */
     },
   },
 });
 
-export const { addFavourite, clearFavourites } = favouritesSlice.actions;
+export const { getFavourites, addFavourite, clearFavourites, removeFavourite } =
+  favouritesSlice.actions;
 
 export default favouritesSlice.reducer;
