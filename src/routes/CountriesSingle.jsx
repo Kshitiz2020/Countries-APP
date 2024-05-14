@@ -15,7 +15,7 @@ const CountriesSingle = () => {
 
   useEffect(() => {
     dispatch(initializeCountries());
-  }, [dispatch]);
+  }, []);
 
   const countriesList = useSelector((state) => state.countries.countries);
 
@@ -25,13 +25,15 @@ const CountriesSingle = () => {
     (country) => country.name.common === single
   )[0];
 
-  const neighbor = myCountry?.borders.map((borderCode) => {
-    return countriesList.filter(
-      (country) => country?.altSpellings[0] === borderCode
-    );
+  const neighbor = myCountry?.borders?.map((borderCode) => {
+    console.log(borderCode);
+    return countriesList.filter((country) => {
+      return country?.cca3 === borderCode;
+    })[0];
   });
 
-  //console.log(neighbor);
+  console.log(neighbor);
+  console.log(myCountry);
   //? name xaina vaney tyo dekhi ko right processing nagreny
   //(value xaina vaney tyo vnda uta preocess nagrney)
   return (
@@ -39,7 +41,7 @@ const CountriesSingle = () => {
       <h2 className="text-center"> {single}'s Neighbor</h2>
 
       <Row xs={2} md={3} lg={4} className=" g-3">
-        {countriesList.map((country) => (
+        {neighbor?.map((country) => (
           <Col key={country.name.official} className="mt-5">
             <Card className="h-100">
               <Card.Img
