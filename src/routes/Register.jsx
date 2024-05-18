@@ -3,6 +3,7 @@ import { auth } from "../config/config";
 //firebase imported
 
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -15,13 +16,16 @@ const Register = () => {
 
   const [registeredSuccessfully, setRegisteredSuccessfully] = useState(false);
 
+  const navigate = useNavigate();
+
   const handleRegister = async (e) => {
     e.preventDefault();
     if (confirmPassword !== password) {
-      console.log("password should match");
+      // console.log("password should match");
+
       return;
     }
-    console.log(email, password);
+    //console.log(email, password);
     await createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed up
@@ -30,10 +34,12 @@ const Register = () => {
         });
 
         const user = userCredential.user;
+        // Navigate to the countries page after successful registration
         setRegisteredSuccessfully(true);
+        navigate("/countries");
 
         // ...
-        console.log(userCredential);
+        //console.log(userCredential);
       })
       .catch((error) => {
         const errorCode = error.code;

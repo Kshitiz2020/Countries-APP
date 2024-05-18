@@ -1,7 +1,5 @@
 import { useEffect } from "react";
-
 import { Link } from "react-router-dom";
-
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { Button, Spinner } from "react-bootstrap";
 import Card from "react-bootstrap/Card";
@@ -9,23 +7,22 @@ import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import ListGroup from "react-bootstrap/ListGroup";
 import Row from "react-bootstrap/Row";
-
 import { useDispatch, useSelector } from "react-redux";
 import { initializeCountries } from "../store/countriesSlice";
 import { addFavourite } from "../store/favouritesSlice";
-import { imageListClasses } from "@mui/material";
 
 const Countries = () => {
   const dispatch = useDispatch();
-
   const countriesList = useSelector((state) => state.countries.countries);
   const loading = useSelector((state) => state.countries.isLoading);
   const favouritesList = useSelector((state) => state.favourites.favourites);
 
-  const favouriteCountryNames = favouritesList.map((country) => {
-    return country.name.common;
-  });
-  //console.log(countriesList[0]);
+  // Function to check if a country is a favorite
+  const isCountryFavorite = (countryName) => {
+    return favouritesList.some(
+      (country) => country.name.common === countryName
+    );
+  };
 
   useEffect(() => {
     dispatch(initializeCountries());
@@ -48,15 +45,13 @@ const Countries = () => {
 
   return (
     <Container fluid>
-      <Row xs={2} md={3} lg={4} className=" g-3">
+      <Row xs={2} md={3} lg={4} className="g-3">
         {countriesList.map((country) => (
           <Col key={country.name.official} className="mt-5">
             <Card className="h-100">
               <FavoriteIcon
                 color={
-                  favouriteCountryNames.includes(country.name.common)
-                    ? "primary"
-                    : "dark"
+                  isCountryFavorite(country.name.common) ? "primary" : "dark"
                 }
                 onClick={() => dispatch(addFavourite(country))}
               />

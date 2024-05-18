@@ -1,52 +1,99 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { db } from "../config/config";
+import {
+  collection,
+  getDocs,
+  doc,
+  setDoc,
+  updateDoc,
+  deleteField,
+} from "firebase/firestore";
 
-export const favouritesSlice = createSlice({
+// Action to fetch favourites from Firestore
+export const fetchFavourites = (userId) => {
+  return async (dispatch) => {
+    try {
+      const favouritesCol = collection(db, "users", userId, "favourites");
+      const favouritesSnapshot = await getDocs(favouritesCol);
+      const favouritesList = favouritesSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      dispatch(fetchFavouritesSuccess(favouritesList));
+    } catch (error) {
+      dispatch(fetchFavouritesFailure(error.message));
+    }
+  };
+};
+
+// Action to add a favourite to Firestore
+export const addFavouriteToFirestore = (userId, favourite) => {
+  return async (dispatch) => {
+    try {
+      const favouritesDoc = doc(
+        db,
+        "users",
+        userId,
+        "favourites",
+        favourite.id
+      );
+      await setDoc(favouritesDoc, favourite);
+      dispatch(addFavourite(favourite));
+    } catch (error) {
+      // Handle error
+    }
+  };
+};
+
+// Action to remove a favourite from Firestore
+export const removeFavouriteFromFirestore = (userId, favouriteId) => {
+  return async (dispatch) => {
+    try {
+      const favouritesDoc = doc(db, "users", userId, "favourites", favouriteId);
+      await updateDoc(favouritesDoc, {
+        [favouriteId]: deleteField(),
+      });
+      dispatch(removeFavourite(favouriteId));
+    } catch (error) {
+      // Handle error
+    }
+  };
+};
+
+// Define initial state and reducers
+const favouritesSlice = createSlice({
   name: "favourites",
   initialState: {
     favourites: [],
+    loading: false,
+    error: null,
   },
   reducers: {
-    getFavourites(state, action) {
+    fetchFavouritesSuccess(state, action) {
       state.favourites = action.payload;
+      state.loading = false;
+      state.error = null;
+    },
+    fetchFavouritesFailure(state, action) {
+      state.favourites = [];
+      state.loading = false;
+      state.error = action.payload;
     },
     addFavourite(state, action) {
-      if (
-        state.favourites.some(
-          (fav) => fav.name.common === action.payload.name.common
-        )
-      ) {
-        state.favourites = [...state.favourites];
-      } else {
-        state.favourites = [...state.favourites, action.payload];
-      }
-
-      /*    const user = auth.currentUser;
-      if (user) addFavouriteToFirebase(user.uid, action.payload); */
+      state.favourites.push(action.payload);
     },
     removeFavourite(state, action) {
-      const newArray = [...state.favourites];
-      newArray.splice(
-        newArray.findIndex((e) => e === action.payload),
-        1
+      state.favourites = state.favourites.filter(
+        (favourite) => favourite.id !== action.payload
       );
-      state.favourites = [...newArray];
-
-      /*   const user = auth.currentUser;
-      if (user) {
-        removeFavouriteFromFirebase(user.uid, action.payload);
-      } */
-    },
-    clearFavourites(state) {
-      state.favourites = [];
-      /* const user = auth.currentUser;
-      if (user) {
-        clearFavouritesFromFirebase(user.uid);
-      }  */
     },
   },
 });
 
-export const { getFavourites, addFavourite, clearFavourites, removeFavourite } =
-  favouritesSlice.actions;
-
+export const {
+  fetchFavouritesSuccess,
+  fetchFavouritesFailure,
+  addFavourite,
+  removeFavourite,
+} = favouritesSlice.actions;
 export default favouritesSlice.reducer;
