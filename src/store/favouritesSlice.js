@@ -55,7 +55,7 @@ export const removeFavouriteFromFirestore = (userId, favouriteId) => {
       });
       dispatch(removeFavourite(favouriteId));
     } catch (error) {
-      // Handle error
+      alert.error(error);
     }
   };
 };
@@ -84,7 +84,7 @@ const favouritesSlice = createSlice({
     },
     removeFavourite(state, action) {
       state.favourites = state.favourites.filter(
-        (favourite) => favourite.id !== action.payload
+        (favourite) => favourite.name.common !== action.payload
       );
     },
   },

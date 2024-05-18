@@ -1,46 +1,36 @@
-// Favourites.js
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+
 import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import ListGroup from "react-bootstrap/ListGroup";
 import Row from "react-bootstrap/Row";
-import {
-  fetchFavourites,
-  removeFavouriteFromFirestore, // Removed addFavouriteToFirestore import as it's not used in this file
-} from "../store/favouritesSlice";
-import { auth } from "../config/config";
+import { useDispatch, useSelector } from "react-redux";
+import { initializeCountries } from "../store/countriesSlice";
+import { Button } from "react-bootstrap";
+import { removeFavourite } from "../store/favouritesSlice";
 
 const Favourites = () => {
   const dispatch = useDispatch();
-  const { favourites, loading, error } = useSelector(
-    (state) => state.favourites
-  );
-  const user = auth.currentUser;
 
+  const favourites = useSelector((state) => state.favourites.favourites);
+
+  // TODO: Implement logic to retrieve favourites later.
   useEffect(() => {
-    if (user) {
-      dispatch(fetchFavourites(user.uid));
-    }
-  }, [dispatch, user]);
+    dispatch(initializeCountries());
+  }, [dispatch]);
 
-  const handleRemoveFavourite = (favouriteId) => {
-    if (user) {
-      dispatch(removeFavouriteFromFirestore({ userId: user.uid, favouriteId }));
-    }
+  const clearFav = (countryCommonName) => {
+    //logic
+    //console.log(countryCommonName);
+    dispatch(removeFavourite(countryCommonName));
   };
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
 
   return (
     <Container fluid>
-      <Row xs={1} md={2} lg={3} className="g-3">
-        {/* Changed xs={2} to xs={1} for better responsiveness */}
-        {favourites.map((country) => (
-          <Col key={country.name.common} className="mt-5">
-            {/* Changed key to country.id */}
+      <Row xs={2} md={3} lg={4} className=" g-3">
+        {favourites.map((country, idx) => (
+          <Col key={country.name.official} className="mt-5">
             <Card className="h-100">
               <Card.Img
                 variant="top"
@@ -73,11 +63,11 @@ const Favourites = () => {
                   </ListGroup.Item>
                   <ListGroup.Item>
                     {country.population.toLocaleString()}
+                    <Button onClick={() => clearFav(country.name.common)}>
+                      Remove
+                    </Button>
                   </ListGroup.Item>
                 </ListGroup>
-                <button onClick={() => handleRemoveFavourite(country.id)}>
-                  Remove
-                </button>
               </Card.Body>
             </Card>
           </Col>
