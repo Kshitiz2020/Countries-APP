@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { auth } from "../config/config";
+import { auth, db } from "../config/config";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Alert from "react-bootstrap/Alert";
 import Card from "react-bootstrap/Card";
+import { addDoc, collection } from "firebase/firestore";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -31,7 +32,18 @@ const Register = () => {
         password
       );
       const user = userCredential.user;
+
       await updateProfile(user, { displayName: name });
+
+      console.log(user.uid);
+
+      //creating document in collection
+      const docRef = await addDoc(collection(db, `users`), {
+        email: email,
+        favCountries: [],
+      });
+
+      //console.log(auth.currentUser);
 
       // Navigate to the countries page after successful registration
       setRegisteredSuccessfully(true);

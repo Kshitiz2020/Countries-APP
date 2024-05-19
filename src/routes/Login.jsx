@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../config/config"; // Ensure you import your Firebase auth configuration
+import { auth, db } from "../config/config"; // Ensure you import your Firebase auth configuration
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Alert from "react-bootstrap/Alert";
+import { collection, getDocs } from "firebase/firestore";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
   const navigate = useNavigate();
 
   const loginUser = async () => {
@@ -19,9 +21,11 @@ const Login = () => {
         email,
         password
       );
+      //console.log(auth);
       // Successfully logged in
       const user = userCredential.user;
       //console.log("User logged in:", user);
+
       navigate("/countries");
     } catch (error) {
       setError(error.message);

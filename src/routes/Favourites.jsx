@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-
+import { auth, db } from "../config/config";
 import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
@@ -9,11 +9,26 @@ import { useDispatch, useSelector } from "react-redux";
 import { initializeCountries } from "../store/countriesSlice";
 import { Button } from "react-bootstrap";
 import { removeFavourite } from "../store/favouritesSlice";
+import { getDocs, collection } from "firebase/firestore";
 
-const Favourites = () => {
+const Favourites = async () => {
   const dispatch = useDispatch();
 
-  const favourites = useSelector((state) => state.favourites.favourites);
+  //const userDoc = {};
+  /*   try {
+    const usersCollection = await getDocs(collection(db, `users`));
+    usersCollection.forEach((userData) => {
+      if (userData.data().email === auth.currentUser.email) {
+        userDoc.docID = userData.id;
+        userDoc.data = userData.data();
+      }
+    });
+  } catch (error) {
+    console.error(error);
+  } */
+
+  //const favourites = useSelector((state) => state.favourites.favourites);
+  const favourites = [];
 
   // TODO: Implement logic to retrieve favourites later.
   useEffect(() => {
@@ -29,7 +44,7 @@ const Favourites = () => {
   return (
     <Container fluid>
       <Row xs={2} md={3} lg={4} className=" g-3">
-        {favourites.map((country, idx) => (
+        {favourites?.map((country, idx) => (
           <Col key={country.name.official} className="mt-5">
             <Card className="h-100">
               <Card.Img
@@ -63,10 +78,10 @@ const Favourites = () => {
                   </ListGroup.Item>
                   <ListGroup.Item>
                     {country.population.toLocaleString()}
-                    <Button onClick={() => clearFav(country.name.common)}>
-                      Remove
-                    </Button>
                   </ListGroup.Item>
+                  <Button onClick={() => clearFav(country.name.common)}>
+                    Remove
+                  </Button>
                 </ListGroup>
               </Card.Body>
             </Card>

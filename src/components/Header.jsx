@@ -51,7 +51,9 @@ const Header = () => {
                   </Link>
                 </Nav>
               )}
-              {userSignedIn && <ProfileIcon />}
+              {userSignedIn && (
+                <ProfileIcon displayName={auth.currentUser?.displayName} />
+              )}
 
               {userSignedIn ? (
                 <Nav>

@@ -1,8 +1,8 @@
 import { auth } from "../config/config";
 
-const ProfileIcon = () => {
-  console.log(auth);
-  return <div>Hello, {auth.currentUser?.displayName}🤠 </div>;
+const ProfileIcon = ({ displayName }) => {
+  //console.log(auth);
+  return <div>Hello, {displayName}🤠 </div>;
 };
 
 export default ProfileIcon;

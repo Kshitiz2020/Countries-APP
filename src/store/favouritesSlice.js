@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { db } from "../config/config";
 import {
   collection,
@@ -7,10 +7,11 @@ import {
   setDoc,
   updateDoc,
   deleteField,
+  addDoc,
 } from "firebase/firestore";
 
 // Action to fetch favourites from Firestore
-export const fetchFavourites = (userId) => {
+/* export const fetchFavourites = (userId) => {
   return async (dispatch) => {
     try {
       const favouritesCol = collection(db, "users", userId, "favourites");
@@ -24,7 +25,7 @@ export const fetchFavourites = (userId) => {
       dispatch(fetchFavouritesFailure(error.message));
     }
   };
-};
+}; */
 
 // Action to add a favourite to Firestore
 export const addFavouriteToFirestore = (userId, favourite) => {
@@ -46,7 +47,7 @@ export const addFavouriteToFirestore = (userId, favourite) => {
 };
 
 // Action to remove a favourite from Firestore
-export const removeFavouriteFromFirestore = (userId, favouriteId) => {
+/* export const removeFavouriteFromFirestore = (userId, favouriteId) => {
   return async (dispatch) => {
     try {
       const favouritesDoc = doc(db, "users", userId, "favourites", favouriteId);
@@ -58,7 +59,7 @@ export const removeFavouriteFromFirestore = (userId, favouriteId) => {
       alert.error(error);
     }
   };
-};
+}; */
 
 // Define initial state and reducers
 const favouritesSlice = createSlice({
@@ -79,14 +80,21 @@ const favouritesSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
-    addFavourite(state, action) {
+    /*  addFavourite(state, action) {
       state.favourites.push(action.payload);
-    },
+    } ,*/
     removeFavourite(state, action) {
       state.favourites = state.favourites.filter(
         (favourite) => favourite.name.common !== action.payload
       );
     },
+  },
+
+  extraReducers: (builder) => {
+    builder.addCase(
+      addToFirestoreFav.fulfilled,
+      (state, action) => (state.favourites = action.payload)
+    );
   },
 });
 
@@ -96,4 +104,23 @@ export const {
   addFavourite,
   removeFavourite,
 } = favouritesSlice.actions;
+
+const addToFirestoreFav = createAsyncThunk(
+  "users/addToFavourites",
+  async (docID, newData) => {
+    const userDoc = {};
+    const usersCollection = await getDocs(collection(db, `users`));
+    usersCollection.forEach((userData) => {
+      if (userData.data().email === auth.currentUser.email) {
+        userDoc.docID = userData.id;
+        userDoc.data = userData.data();
+      }
+    });
+    await updateDoc(doc(db, "users", docID), {
+      fav: [...userDoc.data, newData],
+    });
+    return [...userDoc.data, newData];
+  }
+);
+
 export default favouritesSlice.reducer;
