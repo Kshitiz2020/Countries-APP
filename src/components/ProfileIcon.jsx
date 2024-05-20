@@ -1,8 +1,9 @@
-import { auth } from "../config/config";
+import React from "react";
+import { useAuth } from "../contexts/AuthContext";
 
-const ProfileIcon = ({ displayName }) => {
-  //console.log(auth);
-  return <div>Hello, {displayName}🤠 </div>;
+const ProfileIcon = () => {
+  const { user } = useAuth();
+  return <div>Hello, {user?.displayName}🤠 </div>;
 };
 
 export default ProfileIcon;

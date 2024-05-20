@@ -8,22 +8,16 @@ import Logout from "./LogoutButton";
 import RegisterButton from "./RegisterButton";
 import { Link } from "react-router-dom";
 
-import { onAuthStateChanged } from "firebase/auth";
-import { useEffect, useState } from "react";
-import { auth } from "../config/config";
+// import { onAuthStateChanged } from "firebase/auth"
+// import { useEffect, useState } from "react"
+// import { auth } from "../config/config"
 import ProfileIcon from "./ProfileIcon";
+import { useAuth } from "../contexts/AuthContext";
 
 const Header = () => {
-  const [userSignedIn, setUserSignedIn] = useState(false);
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUserSignedIn(true);
-      } else {
-        setUserSignedIn(false);
-      }
-    });
-  }, []);
+  const authValues = useAuth();
+
+  // const [userSignedIn, setUserSignedIn] = useState(false)
 
   return (
     <Container fluid>
@@ -44,25 +38,23 @@ const Header = () => {
                 </Link>
               </Nav>
               {/*   <div className="login"> */}
-              {!userSignedIn && (
+              {!authValues?.user && (
                 <Nav>
                   <Link to="/login">
                     <Button variant="contained">Login</Button>
                   </Link>
                 </Nav>
               )}
-              {userSignedIn && (
-                <ProfileIcon displayName={auth.currentUser?.displayName} />
-              )}
+              {authValues?.user && <ProfileIcon />}
 
-              {userSignedIn ? (
+              {authValues?.user ? (
                 <Nav>
                   <Link to="/">
                     <Logout />
                   </Link>
                 </Nav>
               ) : null}
-              {!userSignedIn && (
+              {!authValues?.user && (
                 <Nav>
                   <Link to="/register">
                     <Button variant="contained">Register</Button>

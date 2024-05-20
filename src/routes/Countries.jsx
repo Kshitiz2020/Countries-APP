@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { Link } from "react-router-dom";
 
@@ -9,20 +9,22 @@ import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import ListGroup from "react-bootstrap/ListGroup";
 import Row from "react-bootstrap/Row";
+import NoUserModel from "../components/NoUserModal";
 
 import { useDispatch, useSelector } from "react-redux";
 import { initializeCountries } from "../store/countriesSlice";
-import { addFavourite } from "../store/favouritesSlice";
-import { imageListClasses } from "@mui/material";
+import { addFavourites } from "../store/favouritesSlice";
+import { useAuth } from "../contexts/AuthContext";
 
 const Countries = () => {
+  const { user } = useAuth();
   const dispatch = useDispatch();
-
   const countriesList = useSelector((state) => state.countries.countries);
   const loading = useSelector((state) => state.countries.isLoading);
   const favouritesList = useSelector((state) => state.favourites.favourites);
+  const [showNoUserModel, setShowNoUserModel] = useState(false);
 
-  const favouriteCountryNames = favouritesList.map((country) => {
+  const favouriteCountryNames = favouritesList?.map((country) => {
     return country.name.common;
   });
   //console.log(countriesList[0]);
@@ -48,17 +50,27 @@ const Countries = () => {
 
   return (
     <Container fluid>
+      <NoUserModel
+        showNoUserModel={showNoUserModel}
+        setShowNoUserModel={setShowNoUserModel}
+      />
+
       <Row xs={2} md={3} lg={4} className=" g-3">
         {countriesList.map((country) => (
           <Col key={country.name.official} className="mt-5">
             <Card className="h-100">
               <FavoriteIcon
                 color={
-                  favouriteCountryNames.includes(country.name.common)
+                  favouriteCountryNames?.includes(country.name.common)
                     ? "primary"
                     : "dark"
                 }
-                onClick={() => dispatch(addFavourite(country))}
+                onClick={() => {
+                  if (!user) return setShowNoUserModel(true);
+                  return dispatch(
+                    addFavourites({ docId: user?.uid, newDataToAdd: country })
+                  );
+                }}
               />
               <Card.Img
                 variant="top"
@@ -94,12 +106,7 @@ const Countries = () => {
                   </ListGroup.Item>
                 </ListGroup>
                 <Link to={`/countries/${country.name.common}`}>
-                  <Button
-                    onClick={() => console.log(country.name.common)}
-                    variant="primary"
-                  >
-                    Country Details
-                  </Button>
+                  <Button variant="primary">Country Details</Button>
                 </Link>
               </Card.Body>
             </Card>

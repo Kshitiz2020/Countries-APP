@@ -1,12 +1,10 @@
 import React, { useState } from "react";
-import { auth, db } from "../config/config";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Alert from "react-bootstrap/Alert";
 import Card from "react-bootstrap/Card";
-import { addDoc, collection } from "firebase/firestore";
+import { useAuth } from "../contexts/AuthContext";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -16,6 +14,7 @@ const Register = () => {
   const [registeredSuccessfully, setRegisteredSuccessfully] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { signUp } = useAuth();
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -26,24 +25,11 @@ const Register = () => {
     }
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = userCredential.user;
+      /* const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+      const user = userCredential.user
+      await updateProfile(user, { displayName: name }) */
 
-      await updateProfile(user, { displayName: name });
-
-      console.log(user.uid);
-
-      //creating document in collection
-      const docRef = await addDoc(collection(db, `users`), {
-        email: email,
-        favCountries: [],
-      });
-
-      //console.log(auth.currentUser);
+      await signUp(email, password, name);
 
       // Navigate to the countries page after successful registration
       setRegisteredSuccessfully(true);

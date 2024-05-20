@@ -1,31 +1,22 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "../config/config"; // Ensure you import your Firebase auth configuration
+import { useNavigate, Link } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Alert from "react-bootstrap/Alert";
-import { collection, getDocs } from "firebase/firestore";
+import { useAuth } from "../contexts/AuthContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
   const navigate = useNavigate();
+  const { signIn } = useAuth();
 
-  const loginUser = async () => {
+  const loginUser = async (e) => {
+    e.preventDefault();
+
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      //console.log(auth);
-      // Successfully logged in
-      const user = userCredential.user;
-      //console.log("User logged in:", user);
-
+      await signIn(email, password);
       navigate("/countries");
     } catch (error) {
       setError(error.message);
@@ -55,12 +46,12 @@ const Login = () => {
           />
         </Form.Group>
         {error && <Alert variant="danger">{error}</Alert>}
-        <Button variant="primary" onClick={loginUser}>
+        <Button variant="primary" onClick={loginUser} type="submit">
           Login
         </Button>
       </Form>
       <p className="mt-3">
-        Not a member yet? <a href="/register">Register</a>
+        Not a member yet? <Link to="/register">Register</Link>
       </p>
     </div>
   );

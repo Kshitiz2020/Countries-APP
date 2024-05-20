@@ -26,14 +26,11 @@ const CountriesSingle = () => {
   )[0];
 
   const neighbor = myCountry?.borders?.map((borderCode) => {
-    console.log(borderCode);
     return countriesList.filter((country) => {
       return country?.cca3 === borderCode;
     })[0];
   });
 
-  console.log(neighbor);
-  console.log(myCountry);
   //? name xaina vaney tyo dekhi ko right processing nagreny
   //(value xaina vaney tyo vnda uta preocess nagrney)
   return (
